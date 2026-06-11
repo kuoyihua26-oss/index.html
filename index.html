@@ -124,46 +124,25 @@
             z-index: 1;
         }
 
-/* 1. 修改 .table-spread 容器 */
-.table-spread {
-    width: 100%;
-    max-width: 1100px;
-    height: 120px;
-    margin-bottom: 40px;
-    
-    /* 改用 flex 排列，自動計算間距 */
-    display: flex;
-    overflow-x: auto;      /* 允許水平滑動 */
-    justify-content: flex-start; 
-    align-items: center;
-    gap: 15px;             /* 【關鍵】這裡控制牌與牌之間的間距 */
-    padding: 0 20px;       /* 兩側留邊 */
-    
-    z-index: 1;
-    background: rgba(45, 15, 75, 0.35);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 196, 247, 0.2);
-    -webkit-overflow-scrolling: touch;
-}
-
-/* 2. 修改 .spread-card-back 樣式 */
-.spread-card-back {
-    /* 移除 position: absolute 與 left 屬性 */
-    flex-shrink: 0;        /* 確保卡片不會被壓縮 */
-    width: 50px;
-    height: 90px;
-    background: linear-gradient(135deg, #ffaec9 0%, #fca1e6 50%, #b36ec4 100%);
-    border: 1.5px solid #ffffff;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-size: 1rem;
-    transition: transform 0.25s ease;
-}
+        /* 一字直列展牌桌 */
+        .table-spread {
+            width: 100%;
+            max-width: 1100px;
+            height: 120px;
+            margin-bottom: 40px;
+            position: relative;
+            /* 修改這三行 */
+            display: flex;
+            overflow-x: auto;      /* 超出螢幕時可以水平滑動 */
+            justify-content: flex-start; /* 讓牌從左邊開始排 */
+            /* 保持原有樣式 */
+            z-index: 1;
+            background: rgba(45, 15, 75, 0.35);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 196, 247, 0.2);
+            padding: 10px;
+            -webkit-overflow-scrolling: touch; /* 讓手機滑動更滑順 */
+        }
 
         /* 蓋牌背樣式：粉嫩蝴蝶結星芒 */
         .spread-card-back {
@@ -452,20 +431,18 @@
             const cardWidth = 50;
             const step = (tableWidth - cardWidth) / (totalCardsInDeck - 1);
 
-            // 在 initSpread() 內，繪製牌堆的迴圈修改如下：
-           for (let i = 0; i < totalCardsInDeck; i++) {
-           const cardDiv = document.createElement('div');
-           cardDiv.className = 'spread-card-back';
-           cardDiv.innerText = '🎀'; 
-           cardDiv.id = `deckCard-${i}`;
-    
-            // 移除以下這兩行計算，因為現在交給 CSS flex 處理
-            // const leftPosition = step * i;
-           // cardDiv.style.left = `${leftPosition}px`;
-    
-           cardDiv.setAttribute('onclick', `pickCardFromSpread(${i})`);
-           tableSpread.appendChild(cardDiv);
-           }
+            for (let i = 0; i < totalCardsInDeck; i++) {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'spread-card-back';
+                cardDiv.innerText = '🎀'; 
+                cardDiv.id = `deckCard-${i}`;
+                
+                const leftPosition = step * i;
+                cardDiv.style.left = `${leftPosition}px`;
+                
+                cardDiv.setAttribute('onclick', `pickCardFromSpread(${i})`);
+                tableSpread.appendChild(cardDiv);
+            }
         }
 
         function pickCardFromSpread(deckId) {
