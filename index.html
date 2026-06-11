@@ -452,18 +452,20 @@
             const cardWidth = 50;
             const step = (tableWidth - cardWidth) / (totalCardsInDeck - 1);
 
-            for (let i = 0; i < totalCardsInDeck; i++) {
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'spread-card-back';
-                cardDiv.innerText = '🎀'; 
-                cardDiv.id = `deckCard-${i}`;
-                
-                const leftPosition = step * i;
-                cardDiv.style.left = `${leftPosition}px`;
-                
-                cardDiv.setAttribute('onclick', `pickCardFromSpread(${i})`);
-                tableSpread.appendChild(cardDiv);
-            }
+            // 在 initSpread() 內，繪製牌堆的迴圈修改如下：
+           for (let i = 0; i < totalCardsInDeck; i++) {
+           const cardDiv = document.createElement('div');
+           cardDiv.className = 'spread-card-back';
+           cardDiv.innerText = '🎀'; 
+           cardDiv.id = `deckCard-${i}`;
+    
+            // 移除以下這兩行計算，因為現在交給 CSS flex 處理
+            // const leftPosition = step * i;
+           // cardDiv.style.left = `${leftPosition}px`;
+    
+           cardDiv.setAttribute('onclick', `pickCardFromSpread(${i})`);
+           tableSpread.appendChild(cardDiv);
+           }
         }
 
         function pickCardFromSpread(deckId) {
