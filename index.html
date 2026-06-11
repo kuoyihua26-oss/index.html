@@ -496,7 +496,7 @@
             if (drawnCount < totalCardsInSpread) {
                 document.getElementById('statusText').innerText = `已挑選第 ${drawnCount} 張！請繼續點選下一張 🎀`;
             } else {
-                document.getElementById('statusText').innerText = `挑選完畢！專屬提示詞已在下方星雲中亮起。`;
+                document.getElementById('statusText').innerText = `挑選完畢！牌組已在下方星雲中亮起。`;
                 generateAiPrompt();
             }
         }
@@ -506,7 +506,7 @@
             const selectText = document.getElementById('spreadSelect').options[document.getElementById('spreadSelect').selectedIndex].text;
             const userQuestion = document.getElementById('userQuestion').value.trim();
             
-            let prompt = `你好，我剛剛使用線上塔羅牌進行了盲抽占卜（78張大小阿爾克那混牌）。\n\n`;
+            let prompt = `你好，我剛剛使用線上塔羅牌進行了盲抽占卜（78張大小阿爾克那）。\n\n`;
             
             if (spreadType !== 'today' && userQuestion !== '') {
                 prompt += `【我所詢問的問題】\n❓ "${userQuestion}"\n\n`;
@@ -523,7 +523,7 @@
             prompt += `\n請化身為兼具心理學、神祕學與人生教練背景的塔羅大師。\n`;
             
             if (spreadType === 'today') {
-                prompt += `請針對我今天在【身體/行動】、【心理/情緒】以及【靈性/高我】三個層面的抽牌結果，繞開主觀的特定提問，直接從這三個生活維度給予我最純粹的能量洞察、溫暖提醒與具體的調整指引。期待你的深度解讀，謝謝！`;
+                prompt += `請針對我今天在【身體/行動】、【心理/情緒】以及【靈性/高我】三個層面的抽牌結果，繞開主觀的特定提問，直接從這三個生活維度給予我最中立帶點溫暖的能量洞察、具體指引。期待你的深度解讀，謝謝！`;
             } else if (spreadType === 'one') {
                 prompt += `請針對我所問的問題，結合這張【今日神諭指引】的正逆位與牌面象徵，給予我最直擊核心的宇宙洞察、盲點提醒與實用的生活行動建議。謝謝！`;
             } else {
@@ -539,7 +539,7 @@
         function copyToClipboard() {
             const textToCopy = document.getElementById('aiPromptText').innerText;
             navigator.clipboard.writeText(textToCopy).then(() => {
-                alert('唯美粉紅版 Prompt 複製成功！快貼給 AI 解讀吧！🎀');
+                alert('複製成功！快貼給 AI 解讀吧！🎀');
             }).catch(err => {
                 alert('複製失敗，請手動複製文字。');
             });
