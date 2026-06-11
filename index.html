@@ -251,11 +251,23 @@
         }
 
         /* 【未來提示】如果你之後放圖片，希望逆位時整張圖倒過來，請把底下的 .card-title 改成 .card-front 喔！ */
-        .card-front.reversed { transform: rotateY(180deg) rotate(180deg); }
-        transform: rotateY(180deg) rotate(180deg); 
-       backface-visibility: hidden;    /* 隱藏背面，提升渲染效能 */
-       image-rendering: -webkit-optimize-contrast; /* 強制圖片以最高對比度渲染 */
-       }
+.card-front.reversed { 
+    /* 這裡只翻轉圖片區域，不要直接把整個容器轉 180 度，避免字體模糊 */
+    transform: rotateY(180deg); 
+}
+
+/* 我們把「逆位翻轉」的任務交給圖片容器本身 */
+.card-front.reversed img {
+    transform: rotate(180deg);
+}
+
+/* 強制所有文字在翻轉時不要使用低解析度渲染 */
+.card-front, .card-front * {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased; /* 這是讓字體變清晰的關鍵 */
+    text-rendering: optimizeLegibility;
+}
         .card-title { 
             font-weight: bold; 
             font-size: 0.9rem; 
