@@ -2,70 +2,123 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 智能塔羅・唯美粉嫩星雲占卜系統</title>
     <style>
-        body { background: radial-gradient(circle at 50% 30%, #5a3082 0%, #361754 50%, #1e0a32 100%); color: #fff2ff; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        h1 { color: #ffc4f7; text-shadow: 0 0 20px rgba(255, 196, 247, 0.8); margin-bottom: 20px; }
-        .setup-panel { background: rgba(65, 30, 96, 0.55); backdrop-filter: blur(12px); padding: 20px; border-radius: 24px; margin-bottom: 25px; border: 1px solid rgba(255, 196, 247, 0.35); width: 100%; max-width: 600px; }
-        .card-container { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+        body {
+            background: radial-gradient(circle at 50% 30%, #5a3082 0%, #361754 50%, #1e0a32 100%);
+            color: #fff2ff;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; position: relative; overflow-x: hidden;
+        }
+        body::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255, 174, 213, 0.2) 0%, rgba(230, 180, 255, 0.15) 50%, transparent 100%); pointer-events: none; z-index: 0; }
+        h1 { color: #ffc4f7; text-shadow: 0 0 20px rgba(255, 196, 247, 0.8), 0 0 8px rgba(255, 255, 255, 0.6); margin-bottom: 5px; text-align: center; z-index: 1; font-weight: 300; letter-spacing: 2px; }
+        .setup-panel { background: rgba(65, 30, 96, 0.55); backdrop-filter: blur(12px); padding: 20px 25px; border-radius: 24px; margin-bottom: 25px; border: 1px solid rgba(255, 196, 247, 0.35); max-width: 600px; width: 100%; display: flex; flex-direction: column; gap: 15px; z-index: 1; box-shadow: 0 8px 32px rgba(255, 150, 220, 0.15); }
+        .flex-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; width: 100%; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        label { font-weight: bold; color: #ffe3fa; font-size: 0.9rem; letter-spacing: 1px; }
+        select, input[type="text"] { background-color: rgba(92, 46, 132, 0.85); color: white; border: 1px solid rgba(255, 196, 247, 0.4); padding: 10px 15px; border-radius: 14px; font-size: 0.95rem; outline: none; box-sizing: border-box; transition: all 0.3s; }
+        .question-box { display: none; }
+        .status-text { font-size: 1.05rem; color: #ffe0f9; margin-bottom: 25px; text-align: center; font-weight: bold; text-shadow: 0 0 10px rgba(255, 224, 249, 0.7); z-index: 1; }
+        .table-spread { width: 100%; max-width: 1100px; height: 120px; margin-bottom: 40px; position: relative; display: flex; justify-content: center; align-items: center; z-index: 1; background: rgba(45, 15, 75, 0.35); border-radius: 24px; border: 1px solid rgba(255, 196, 247, 0.2); padding: 10px 0; }
+        .spread-card-back { position: absolute; width: 50px; height: 90px; background: linear-gradient(135deg, #ffaec9 0%, #fca1e6 50%, #b36ec4 100%); border: 1.5px solid #ffffff; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 1rem; top: 15px; }
+        .card-container { display: flex; gap: 24px; justify-content: center; perspective: 1000px; margin-bottom: 30px; flex-wrap: wrap; max-width: 1200px; width: 100%; z-index: 1; }
         .card-wrapper { width: 135px; height: 245px; }
-        .card { width: 100%; height: 205px; position: relative; transform-style: preserve-3d; transition: transform 0.7s; border-radius: 14px; cursor: pointer; }
+        .position-label { text-align: center; font-size: 0.85rem; color: #ffc4f7; margin-bottom: 10px; font-weight: bold; background: rgba(255, 196, 247, 0.22); padding: 5px 8px; border-radius: 8px; border: 1px solid rgba(255, 196, 247, 0.35); }
+        .card { width: 100%; height: calc(100% - 40px); position: relative; transform-style: preserve-3d; transition: transform 0.7s; border: 2px dashed rgba(255, 196, 247, 0.45); border-radius: 14px; }
+        .card.has-card { border: none; }
         .card.flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .card-back { background: linear-gradient(135deg, #ffaec9, #9b5cb0); border: 2.5px solid #fff; font-size: 2rem; }
-        .card-front { background: #fff5fa; color: #3d1b54; transform: rotateY(180deg); padding: 0; overflow: hidden; position: relative; }
-        .result-panel { display: none; background: rgba(65,30,96,0.8); padding: 20px; border-radius: 18px; border: 1px solid rgba(255,196,247,0.5); max-width: 650px; text-align: center; }
-        .ai-prompt-box { background: #1a082b; color: #ffe6fb; padding: 15px; border-radius: 10px; font-family: monospace; white-space: pre-wrap; margin: 15px 0; text-align: left; }
-        button { background: linear-gradient(90deg, #f783df, #ffbfe9); color: #311754; border: none; padding: 10px 24px; border-radius: 22px; cursor: pointer; font-weight: bold; }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; }
+        .card-back { background: linear-gradient(135deg, #ffaec9 0%, #fca1e6 50%, #9b5cb0 100%); color: #ffffff; border: 2.5px solid #ffffff; }
+        .card-front { background-color: #fff5fa; color: #3d1b54; transform: rotateY(180deg); border: 3px double #fca1e6; display: flex; flex-direction: column; overflow: hidden; }
+        .result-panel { width: 100%; max-width: 650px; display: none; background: rgba(65, 30, 96, 0.8); backdrop-filter: blur(12px); border-radius: 18px; padding: 20px; margin-top: 10px; z-index: 1; }
+        .ai-prompt-box { background-color: #1a082b; color: #ffe6fb; padding: 15px; border-radius: 10px; font-family: monospace; white-space: pre-wrap; margin: 15px 0; overflow-y: auto; }
+        button { background: linear-gradient(90deg, #f783df 0%, #ffbfe9 100%); color: #311754; border: none; padding: 10px 24px; border-radius: 22px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>✦ 唯美星空神諭塔羅 ✦</h1>
     <div class="setup-panel">
-        <select id="spreadSelect" onchange="initSpread()">
-            <option value="today" selected>今日綜合運勢</option>
-        </select>
-        <button onclick="initSpread()">重新洗牌</button>
+        <div class="flex-row">
+            <div class="input-group">
+                <label for="spreadSelect">選擇牌陣：</label>
+                <select id="spreadSelect" onchange="initSpread()">
+                    <option value="one">單張神諭指引</option>
+                    <option value="today" selected>今日綜合運勢</option>
+                    <option value="three">時間聖三角</option>
+                    <option value="five">大十字心靈牌陣</option>
+                    <option value="nine">九宮格全方位占卜</option>
+                </select>
+            </div>
+            <button onclick="initSpread()">重新洗牌</button>
+        </div>
+        <div class="input-group question-box" id="questionBox">
+            <label for="userQuestion">心中默念問題：</label>
+            <input type="text" id="userQuestion">
+        </div>
     </div>
+    <div class="status-text" id="statusText">請挑選卡片</div>
+    <div class="table-spread" id="tableSpread"></div>
     <div class="card-container" id="cardContainer"></div>
     <div class="result-panel" id="resultPanel">
         <div class="ai-prompt-box" id="aiPromptText"></div>
-        <button onclick="copyToClipboard()">一鍵複製提示詞</button>
+        <button onclick="copyToClipboard()">一鍵複製 AI 提示詞</button>
     </div>
 
     <script>
-        const fullDeck = Array.from({length: 78}, (_, i) => ({ originalIndex: i, name: "塔羅牌" + i }));
-        let dynamicDeck = [];
+        const fullTarotDeck = Array.from({length: 78}, (_, i) => ({ name: "牌號 " + i, originalIndex: i }));
+        let spreads = { one: ["今日核心"], today: ["身體", "心理", "靈性"], three: ["過去", "現在", "未來"], five: ["現狀", "障礙", "潛意識", "過去", "未來"], nine: ["環境", "動機", "過去", "阻礙", "優勢", "發展", "他人", "盲點", "結果"] };
+        let currentSpreadCards = [], drawnCount = 0, totalCardsInSpread = 0, dynamicDeck = [], positionNames = [];
 
         function initSpread() {
-            dynamicDeck = [...fullDeck];
-            document.getElementById('cardContainer').innerHTML = '<div class="card-wrapper"><div class="card" id="card-0" onclick="draw()">點我翻牌</div></div>';
+            const spreadType = document.getElementById('spreadSelect').value;
+            positionNames = spreads[spreadType]; totalCardsInSpread = positionNames.length; drawnCount = 0;
+            dynamicDeck = fullTarotDeck.map(card => ({...card}));
             document.getElementById('resultPanel').style.display = 'none';
+            const container = document.getElementById('cardContainer'); container.innerHTML = '';
+            positionNames.forEach((posName, index) => {
+                const wrapper = document.createElement('div'); wrapper.className = 'card-wrapper';
+                wrapper.innerHTML = `<div class="position-label">${posName}</div><div class="card" id="card-${index}"></div>`;
+                container.appendChild(wrapper);
+            });
+            const tableSpread = document.getElementById('tableSpread'); tableSpread.innerHTML = '';
+            for (let i = 0; i < 78; i++) {
+                const cardDiv = document.createElement('div'); cardDiv.className = 'spread-card-back'; cardDiv.innerText = '🎀';
+                cardDiv.style.left = `${(Math.min(1000, window.innerWidth - 40) / 77) * i}px`;
+                cardDiv.onclick = () => pickCard(i); tableSpread.appendChild(cardDiv);
+            }
         }
 
-        function draw() {
-            const cardElement = document.getElementById('card-0');
-            const rand = Math.floor(Math.random() * dynamicDeck.length);
-            const card = dynamicDeck.splice(rand, 1)[0];
+        function pickCard(deckId) {
+            if (drawnCount >= totalCardsInSpread) return;
+            const picked = document.getElementById(`deckCard-${deckId}`); if (picked) picked.style.visibility = 'hidden';
+            const cardElement = document.getElementById('card-' + drawnCount);
+            const card = dynamicDeck.splice(Math.floor(Math.random() * dynamicDeck.length), 1)[0];
             const isReversed = Math.random() < 0.5;
             
+            // 關鍵修改：圖片旋轉用 transform，文字直接顯示，完全分離
             cardElement.innerHTML = `
-                <div class="card-face card-back">🎀</div>
-                <div class="card-face card-front" style="position: relative; overflow: hidden;">
-                    <div style="width: 100%; height: 100%; transform: ${isReversed ? 'rotate(180deg)' : 'rotate(0deg)'}; transition: transform 0.5s;">
-                        <img src="cards/${card.originalIndex}.png" onerror="this.style.display='none'" style="width:100%; height:100%; object-fit:cover; display:block;">
-                    </div>
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 8px 4px; font-size: 0.75rem; font-weight: bold; text-align: center; z-index: 10;">
+                <div class="card-face card-back"></div>
+                <div class="card-face card-front">
+                    <img src="cards/${card.originalIndex}.jpg" style="width: 100%; height: 80%; object-fit: cover; transform: ${isReversed ? 'rotate(180deg)' : 'rotate(0deg)'}; transition: transform 0.5s;">
+                    <div style="height: 20%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold;">
                         ${card.name} ${isReversed ? '(逆位)' : '(正位)'}
                     </div>
                 </div>
             `;
-            cardElement.classList.add('flipped');
-            document.getElementById('resultPanel').style.display = 'block';
-            document.getElementById('aiPromptText').innerText = "這張牌是：" + card.name + (isReversed ? " 逆位" : " 正位");
+            setTimeout(() => cardElement.classList.add('flipped'), 50);
+            drawnCount++;
+            if (drawnCount === totalCardsInSpread) generateAiPrompt();
         }
-        window.onload = initSpread;
+
+        function generateAiPrompt() {
+            document.getElementById('resultPanel').style.display = 'block';
+            document.getElementById('aiPromptText').innerText = "占卜已完成，請根據抽出的牌進行解析...";
+        }
+
         function copyToClipboard() { navigator.clipboard.writeText(document.getElementById('aiPromptText').innerText); alert('已複製！'); }
+        window.onload = initSpread;
     </script>
 </body>
 </html>
