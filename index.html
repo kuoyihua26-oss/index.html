@@ -460,8 +460,8 @@
 
             cardElement.classList.add('has-card');
             
-// 這樣寫的話，有圖會顯示圖，沒圖則顯示「文字」，這樣你就不用全部弄完也能測試！
-const imageUrl = `cards/${selectedCard.originalIndex}.jpg`;
+            // 這樣寫的話，有圖會顯示圖，沒圖則顯示「文字」，這樣你就不用全部弄完也能測試！
+const imageUrl = `cards/${selectedCard.originalIndex}.png`;
 
 cardElement.innerHTML = `
     <div class="card-face card-back"></div>
@@ -471,12 +471,6 @@ cardElement.innerHTML = `
         <div style="display: none; position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; color: #3d1b54; font-weight: bold;">
             ${selectedCard.name}<br>(${orientation})
         </div>
-
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 6px 4px; font-size: 0.72rem; font-weight: bold; text-align: center; backdrop-filter: blur(4px);">
-            ${selectedCard.name} (${orientation})
-        </div>
-    </div>
-`;
 
         <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 6px 4px; font-size: 0.72rem; font-weight: bold; text-align: center; backdrop-filter: blur(4px);">
             ${selectedCard.name} (${orientation})
