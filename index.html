@@ -252,7 +252,10 @@
 
         /* 【未來提示】如果你之後放圖片，希望逆位時整張圖倒過來，請把底下的 .card-title 改成 .card-front 喔！ */
         .card-front.reversed { transform: rotateY(180deg) rotate(180deg); }
-        
+        transform: rotateY(180deg) rotate(180deg); 
+       backface-visibility: hidden;    /* 隱藏背面，提升渲染效能 */
+       image-rendering: -webkit-optimize-contrast; /* 強制圖片以最高對比度渲染 */
+       }
         .card-title { 
             font-weight: bold; 
             font-size: 0.9rem; 
