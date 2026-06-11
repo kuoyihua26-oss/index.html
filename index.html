@@ -124,24 +124,23 @@
             z-index: 1;
         }
 
-        /* 一字直列展牌桌 */
-        .table-spread {
+/* 一字直列展牌桌 */
+.table-spread {
             width: 100%;
             max-width: 1100px;
-            height: 120px;
             margin-bottom: 40px;
-            position: relative;
-            /* 修改這三行 */
+            /* 改用 flex 換行排版，解決擠在一起的問題 */
             display: flex;
-            overflow-x: auto;      /* 超出螢幕時可以水平滑動 */
-            justify-content: flex-start; /* 讓牌從左邊開始排 */
-            /* 保持原有樣式 */
+            flex-wrap: wrap; 
+            justify-content: center;
+            gap: 5px; /* 牌與牌的間距 */
             z-index: 1;
             background: rgba(45, 15, 75, 0.35);
             border-radius: 24px;
             border: 1px solid rgba(255, 196, 247, 0.2);
-            padding: 10px;
-            -webkit-overflow-scrolling: touch; /* 讓手機滑動更滑順 */
+            padding: 15px;
+            min-height: 150px;
+            overflow-y: auto; /* 若牌太多，垂直高度會自動延伸 */
         }
 
         /* 蓋牌背樣式：粉嫩蝴蝶結星芒 */
@@ -389,60 +388,43 @@
         let dynamicDeck = []; 
         let positionNames = [];
 
-        function initSpread() {
-            const spreadType = document.getElementById('spreadSelect').value;
-            
-            const qBox = document.getElementById('questionBox');
-            if (spreadType === 'today') {
-                qBox.style.display = 'none';
-                document.getElementById('userQuestion').value = ''; 
-            } else {
-                qBox.style.display = 'flex';
-            }
-
-            positionNames = spreads[spreadType];
+function initSpread() {
+            const type = document.getElementById('spreadSelect').value;
+            positionNames = spreads[type];
             totalCardsInSpread = positionNames.length;
             drawnCount = 0;
-            currentSpreadCards = new Array(totalCardsInSpread).fill(null);
-            
-            // 【未來提示】這裡已經幫你寫好了 originalIndex 索引，以後洗牌也能對準 0-77 張圖！
-            dynamicDeck = fullTarotDeck.map((card, idx) => ({...card, originalIndex: idx}));
-
+            dynamicDeck = fullTarotDeck.map(c => ({...c}));
+            document.getElementById('cardContainer').innerHTML = '';
+            document.getElementById('tableSpread').innerHTML = '';
             document.getElementById('resultPanel').style.display = 'none';
-            document.getElementById('statusText').innerText = `已洗牌！請在粉紅直列牌組中，親自挑選 ${totalCardsInSpread} 張牌 ✧`;
 
-            const container = document.getElementById('cardContainer');
-            container.innerHTML = '';
-            positionNames.forEach((posName, index) => {
+            // 設置占卜位置顯示
+            positionNames.forEach((pos, i) => {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'card-wrapper';
-                wrapper.innerHTML = `
-                    <div class="position-label">${posName}</div>
-                    <div class="card" id="card-${index}"></div>
-                `;
-                container.appendChild(wrapper);
+                wrapper.innerHTML = `<div class="position-label">${pos}</div><div class="card" id="card-${i}"></div>`;
+                document.getElementById('cardContainer').appendChild(wrapper);
             });
 
+            // --- 這一段就是你剛剛卡住的 for 迴圈，請直接取代這裡 ---
             const tableSpread = document.getElementById('tableSpread');
-            tableSpread.innerHTML = '';
-            
-            const totalCardsInDeck = fullTarotDeck.length;
-            const tableWidth = Math.min(1000, window.innerWidth - 40);
-            const cardWidth = 50;
-            const step = (tableWidth - cardWidth) / (totalCardsInDeck - 1);
-
-            for (let i = 0; i < totalCardsInDeck; i++) {
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'spread-card-back';
-                cardDiv.innerText = '🎀'; 
-                cardDiv.id = `deckCard-${i}`;
+            for(let i = 0; i < 78; i++) {
+                const card = document.createElement('div');
+                card.className = 'spread-card-back';
+                card.innerText = '🎀';
+                card.id = `deckCard-${i}`;
                 
-                const leftPosition = step * i;
-                cardDiv.style.left = `${leftPosition}px`;
+                // 【核心修改】：移除絕對定位 (position: absolute)，改為流動排版
+                card.style.position = 'static'; 
+                card.style.margin = '3px';      // 每一張牌的間距
                 
-                cardDiv.setAttribute('onclick', `pickCardFromSpread(${i})`);
-                tableSpread.appendChild(cardDiv);
+                card.onclick = () => pickCardFromSpread(i);
+                tableSpread.appendChild(card);
             }
+            // --- 取代到這裡為止 ---
+            
+            document.getElementById('statusText').innerText = "請挑選卡片";
+        }
         }
 
         function pickCardFromSpread(deckId) {
