@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 智能塔羅・唯美粉嫩星雲占卜系統</title>
+    <title>AI 智能塔羅・星雲占卜系統</title>
     <style>
         body {
             /* 夢幻粉紫星雲漸層 */
@@ -316,15 +316,15 @@
 </head>
 <body>
 
-    <h1>✦ 唯美星空神諭塔羅 ✦</h1>
+    <h1>✦ 星空神諭塔羅 ✦</h1>
     
     <div class="setup-panel">
         <div class="flex-row">
             <div class="input-group">
                 <label for="spreadSelect">選擇今天想占卜的牌陣：</label>
                 <select id="spreadSelect" onchange="initSpread()">
-                    <option value="one">單張神諭指引 (1張 - 核心啟示)</option>
-                    <option value="today" selected>今日綜合運勢 (3張 - 身、心、靈)</option>
+                    <option value="one">單張指引 (1張 - 核心啟示)</option>
+                    <option value="today" selected>今日綜合運勢 (3張 - 身心靈)</option>
                     <option value="three">時間聖三角-過去現在未來 (3張)</option>
                     <option value="five">大十字心靈牌陣 (5張)</option>
                     <option value="nine">九宮格全方位占卜 (9張)</option>
@@ -346,13 +346,13 @@
     <div class="card-container" id="cardContainer"></div>
 
     <div class="result-panel" id="resultPanel">
-        <h3 style="margin-top:0; color:#ffc4f7; text-shadow: 0 0 10px rgba(255, 196, 247, 0.6);">✦ 唯美星空解牌提示已打包 ✦</h3>
-        <p style="font-size:0.85rem; color:#ffe3fa;">複製下方特製的 <b>AI 提示詞</b> 貼給 AI，立即獲取專屬的心靈宇宙指引 🎀</p>
+        <h3 style="margin-top:0; color:#ffc4f7; text-shadow: 0 0 10px rgba(255, 196, 247, 0.6);">✦ 星空占卜已打包 ✦</h3>
+        <p style="font-size:0.85rem; color:#ffe3fa;">複製下方特製的 <b>AI 占卜內容</b> 貼給 AI，獲取專屬的宇宙指引 🎀</p>
         
         <div class="ai-prompt-box" id="aiPromptText"></div>
         
         <div style="text-align: center;">
-            <button onclick="copyToClipboard()">一鍵複製 AI 提示詞</button>
+            <button onclick="copyToClipboard()">一鍵複製 </button>
         </div>
     </div>
 
@@ -514,21 +514,20 @@
                 prompt += `【我所詢問的問題】\n❓ （未填寫特定問題，請進行普遍性的核心流年或事件探索）\n\n`;
             }
             
-            prompt += `【使用的塔羅牌陣】\n👉 ${selectText}\n\n`;
             prompt += `【抽出的牌組詳細資訊】\n`;
             
             currentSpreadCards.forEach((item, idx) => {
                 prompt += `${idx + 1}. 位置意義：[${item.position}] ── 抽到：${item.cardName} (${item.orientation})\n`;
             });
 
-            prompt += `\n請化身為兼具心理學、神祕學與人生教練背景的頂級塔羅大師。\n`;
+            prompt += `\n請化身為兼具心理學、神祕學與人生教練背景的塔羅大師。\n`;
             
             if (spreadType === 'today') {
                 prompt += `請針對我今天在【身體/行動】、【心理/情緒】以及【靈性/高我】三個層面的抽牌結果，繞開主觀的特定提問，直接從這三個生活維度給予我最純粹的能量洞察、溫暖提醒與具體的調整指引。期待你的深度解讀，謝謝！`;
             } else if (spreadType === 'one') {
-                prompt += `請針對我所問的問題，結合這張【今日核心神諭指引】的正逆位與牌面象徵，給予我最直擊核心的宇宙洞察、盲點提醒與實用的生活行動建議。謝謝！`;
+                prompt += `請針對我所問的問題，結合這張【今日神諭指引】的正逆位與牌面象徵，給予我最直擊核心的宇宙洞察、盲點提醒與實用的生活行動建議。謝謝！`;
             } else {
-                prompt += `請緊扣我所詢問的問題，並深刻結合各個牌陣位置的空間意義、牌面正逆位特徵，進行全面、溫暖、有條理的交叉深度解析，並提供切實的解套與行動方針。謝謝！`;
+                prompt += `請緊扣我所詢問的問題，並深刻結合各個牌陣位置的空間意義、牌面正逆位特徵，進行全面、有條理的交叉深度解析，並提供切實的建議。謝謝！`;
             }
 
             document.getElementById('aiPromptText').innerText = prompt;
