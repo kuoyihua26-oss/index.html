@@ -251,7 +251,7 @@
         }
 
         /* 【未來提示】如果你之後放圖片，希望逆位時整張圖倒過來，請把底下的 .card-title 改成 .card-front 喔！ */
-        .card-front.reversed { transform: rotateY(180deg) rotate(180deg); }
+        .card-front.reversed .card-title { transform: rotate(180deg); }
         
         .card-title { 
             font-weight: bold; 
@@ -461,22 +461,13 @@
             cardElement.classList.add('has-card');
             
             // 👇 這裡就是【正面牌面】的生成位置
-            const imageUrl = `cards/${selectedCard.originalIndex}.png`;
-
             cardElement.innerHTML = `
-            <div class="card-face card-back"></div>
-            <div class="card-face card-front ${isReversed ? 'reversed' : ''}" style="padding: 0; overflow: hidden; position: relative;">
-            <img src="${imageUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-        
-            <div style="display: none; position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; color: #3d1b54; font-weight: bold;">
-            ${selectedCard.name}<br>(${orientation})
-            </div>
-
-            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 6px 4px; font-size: 0.72rem; font-weight: bold; text-align: center; backdrop-filter: blur(4px);">
-            ${selectedCard.name} (${orientation})
-        </div>
-             </div>
+                <div class="card-face card-back"></div>
+                <div class="card-face card-front ${isReversed ? 'reversed' : ''}">
+                    <div class="card-title" style="margin-top:20px;">✦<br>${selectedCard.name}<br><br><b>(${orientation})</b><br><br>✦</div>
+                </div>
             `;
+
             setTimeout(() => {
                 cardElement.classList.add('flipped');
             }, 50);
