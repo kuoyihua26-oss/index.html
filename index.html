@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 智能塔羅・唯美粉嫩星雲占卜系統</title>
+    <style>
+        body {
+            /* 夢幻粉紫星雲漸層 */
+            background: radial-gradient(circle at 50% 30%, #5a3082 0%, #361754 50%, #1e0a32 100%);
+            color: #fff2ff;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 夢幻極光粉嫩微光疊加 */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 174, 213, 0.2) 0%, rgba(230, 180, 255, 0.15) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        h1 {
+            color: #ffc4f7;
+            text-shadow: 0 0 20px rgba(255, 196, 247, 0.8), 0 0 8px rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+            text-align: center;
+            z-index: 1;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* 設定面板 */
+        .setup-panel {
+            background: rgba(65, 30, 96, 0.55);
+            backdrop-filter: blur(12px);
+            padding: 20px 25px;
+            border-radius: 24px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 196, 247, 0.35);
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1;
+            box-shadow: 0 8px 32px rgba(255, 150, 220, 0.15);
+        }
+
+        .flex-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        label {
+            font-weight: bold;
+            color: #ffe3fa;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        select, input[type="text"] {
+            background-color: rgba(92, 46, 132, 0.85);
+            color: white;
+            border: 1px solid rgba(255, 196, 247, 0.4);
+            padding: 10px 15px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: #ffc4f7;
+            box-shadow: 0 0 12px rgba(255, 196, 247, 0.6);
+        }
+
+        /* 唯美粉色提示字體 */
+        input::placeholder {
+            color: rgba(255, 224, 249, 0.5);
+        }
+
+        /* 動態問題輸入框容器 */
+        .question-box {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-text {
+            font-size: 1.05rem;
+            color: #ffe0f9;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 224, 249, 0.7);
+            z-index: 1;
+        }
+
+        /* 一字直列展牌桌 */
+        .table-spread {
+            width: 100%;
+            max-width: 1100px;
+            height: 120px;
+            margin-bottom: 40px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            background: rgba(45, 15, 75, 0.35);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 196, 247, 0.2);
+            padding: 10px 0;
+        }
+
+        /* 蓋牌背樣式：粉嫩蝴蝶結星芒 */
+        .spread-card-back {
+            position: absolute;
+            width: 50px;
+            height: 90px;
+            background: linear-gradient(135deg, #ffaec9 0%, #fca1e6 50%, #b36ec4 100%);
+            border: 1.5px solid #ffffff;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: transform 0.25s ease, top 0.25s ease, box-shadow 0.25s ease;
+            top: 15px;
+        }
+
+        .spread-card-back:hover {
+            top: -8px;
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(255, 174, 213, 0.9), 0 0 5px #fff;
+            z-index: 999;
+        }
+
+        /* 展示牌陣區 */
+        .card-container {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .card-wrapper {
+            width: 135px;
+            height: 245px;
+        }
+
+        .position-label {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #ffc4f7;
+            margin-bottom: 10px;
+            font-weight: bold;
+            background: rgba(255, 196, 247, 0.22);
+            padding: 5px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 196, 247, 0.35);
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .card {
+            width: 100%;
+            height: calc(100% - 40px);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.27);
+            border: 2px dashed rgba(255, 196, 247, 0.45);
+            border-radius: 14px;
+            box-sizing: border-box;
+        }
+
+        .card.has-card { border: none; }
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        /* 唯美大型展示卡背 */
+        .card-back {
+            background: linear-gradient(135deg, #ffaec9 0%, #fca1e6 50%, #9b5cb0 100%);
+            color: #ffffff;
+            border: 2.5px solid #ffffff;
+        }
+        .card-back::after { 
+            content: "🎀"; 
+            font-size: 2.2rem; 
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
+        }
+
+        /* 唯美正面 */
+        .card-front {
+            background-color: #fff5fa;
+            color: #3d1b54;
+            transform: rotateY(180deg);
+            padding: 12px;
+            text-align: center;
+            border: 3px double #fca1e6;
+        }
+
+        /* 【未來提示】如果你之後放圖片，希望逆位時整張圖倒過來，請把底下的 .card-title 改成 .card-front 喔！ */
+        .card-front.reversed { transform: rotateY(180deg) rotate(180deg); }
+        
+        .card-title { 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+            line-height: 1.5; 
+            color: #4a1a63;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.05);
+        }
+
+        /* 結果區 */
+        .result-panel {
+            width: 100%;
+            max-width: 650px;
+            display: none;
+            background: rgba(65, 30, 96, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 196, 247, 0.5);
+            padding: 20px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            z-index: 1;
+            box-shadow: 0 8px 32px rgba(255, 196, 247, 0.25);
+        }
+
+        .ai-prompt-box {
+            background-color: #1a082b;
+            border: 1px solid rgba(255, 196, 247, 0.3);
+            color: #ffe6fb;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            text-align: left;
+            margin: 15px 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        button {
+            background: linear-gradient(90deg, #f783df 0%, #ffbfe9 100%);
+            color: #311754;
+            border: none;
+            padding: 10px 24px;
+            font-size: 0.9rem;
+            border-radius: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 174, 213, 0.4);
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        button:hover { 
+            transform: scale(1.03); 
+            box-shadow: 0 0 25px rgba(255, 196, 247, 0.75);
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✦ 唯美星空神諭塔羅 ✦</h1>
+    
+    <div class="setup-panel">
+        <div class="flex-row">
+            <div class="input-group">
+                <label for="spreadSelect">選擇今天想占卜的牌陣：</label>
+                <select id="spreadSelect" onchange="initSpread()">
+                    <option value="one">單張神諭指引 (1張 - 核心啟示)</option>
+                    <option value="today" selected>今日綜合運勢 (3張 - 身、心、靈)</option>
+                    <option value="three">時間聖三角-過去現在未來 (3張)</option>
+                    <option value="five">大十字心靈牌陣 (5張)</option>
+                    <option value="nine">九宮格全方位占卜 (9張)</option>
+                </select>
+            </div>
+            <button onclick="initSpread()">重新洗牌</button>
+        </div>
+
+        <div class="input-group question-box" id="questionBox">
+            <label for="userQuestion">心中默念你想請教宇宙的問題：</label>
+            <input type="text" id="userQuestion" placeholder="例如：未來的感情發展？下半年的事業運勢？或某個具體困擾...">
+        </div>
+    </div>
+
+    <div class="status-text" id="statusText">請直接在下方直列牌組中挑選卡片</div>
+
+    <div class="table-spread" id="tableSpread"></div>
+
+    <div class="card-container" id="cardContainer"></div>
+
+    <div class="result-panel" id="resultPanel">
+        <h3 style="margin-top:0; color:#ffc4f7; text-shadow: 0 0 10px rgba(255, 196, 247, 0.6);">✦ 唯美星空解牌提示已打包 ✦</h3>
+        <p style="font-size:0.85rem; color:#ffe3fa;">複製下方特製的 <b>AI 提示詞</b> 貼給 AI，立即獲取專屬的心靈宇宙指引 🎀</p>
+        
+        <div class="ai-prompt-box" id="aiPromptText"></div>
+        
+        <div style="text-align: center;">
+            <button onclick="copyToClipboard()">一鍵複製 AI 提示詞</button>
+        </div>
+    </div>
+
+    <script>
+        const fullTarotDeck = [
+            { name: "0 愚者 (The Fool)" }, { name: "I 魔術師 (The Magician)" }, { name: "II 女祭司 (The High Presbyterian)" },
+            { name: "III 女皇 (The Empress)" }, { name: "IV 皇帝 (The Emperor)" }, { name: "V 教皇 (The Hierophant)" },
+            { name: "VI 戀人 (The Lovers)" }, { name: "VII 戰車 (The Chariot)" }, { name: "VIII 力量 (The Strength)" },
+            { name: "IX 隱者 (The Hermit)" }, { name: "X 命運之輪 (Wheel of Fortune)" }, { name: "XI 正義 (Justice)" },
+            { name: "XII 倒吊人 (The Hanged Man)" }, { name: "XIII 死神 (Death)" }, { name: "XIV 節制 (Temperance)" },
+            { name: "XV 惡魔 (The Devil)" }, { name: "XVI 高塔 (The Tower)" }, { name: "XVII 星星 (The Star)" },
+            { name: "XVIII 月亮 (The Moon)" }, { name: "XIX 太陽 (The Sun)" }, { name: "XX 審判 (Judgment)" }, { name: "XXI 世界 (The World)" },
+            
+            { name: "權杖一 (Ace of Wands)" }, { name: "權杖二 (Two of Wands)" }, { name: "權杖三 (Three of Wands)" }, { name: "權杖四 (Four of Wands)" }, { name: "權杖五 (Five of Wands)" }, { name: "權杖六 (Six of Wands)" }, { name: "權杖七 (Seven of Wands)" }, { name: "權杖八 (Eight of Wands)" }, { name: "權杖九 (Nine of Wands)" }, { name: "權杖十 (Ten of Wands)" }, { name: "權杖侍者 (Page of Wands)" }, { name: "權杖騎士 (Knight of Wands)" }, { name: "權杖皇后 (Queen of Wands)" }, { name: "權杖國王 (King of Wands)" },
+            
+            { name: "聖杯一 (Ace of Cups)" }, { name: "聖杯二 (Two of Cups)" }, { name: "聖杯三 (Three of Cups)" }, { name: "聖杯四 (Four of Cups)" }, { name: "聖杯五 (Five of Cups)" }, { name: "聖杯六 (Six of Cups)" }, { name: "聖杯七 (Seven of Cups)" }, { name: "聖杯八 (Eight of Cups)" }, { name: "聖杯九 (Nine of Cups)" }, { name: "聖杯十 (Ten of Cups)" }, { name: "聖杯侍者 (Page of Cups)" }, { name: "聖杯騎士 (Knight of Cups)" }, { name: "聖杯皇后 (Queen of Cups)" }, { name: "聖杯國王 (King of Cups)" },
+            
+            { name: "寶劍一 (Ace of Swords)" }, { name: "寶劍二 (Two of Swords)" }, { name: "寶劍三 (Three of Swords)" }, { name: "寶劍四 (Four of Swords)" }, { name: "寶劍五 (Five of Swords)" }, { name: "寶劍六 (Six of Swords)" }, { name: "寶劍七 (Seven of Swords)" }, { name: "寶劍八 (Eight of Swords)" }, { name: "寶劍九 (Nine of Swords)" }, { name: "寶劍十 (Ten of Swords)" }, { name: "寶劍侍者 (Page of Swords)" }, { name: "寶劍騎士 (Knight of Swords)" }, { name: "寶劍皇后 (Queen of Swords)" }, { name: "寶劍國王 (King of Swords)" },
+            
+            { name: "星幣一 (Ace of Pentacles)" }, { name: "星幣二 (Two of Pentacles)" }, { name: "星幣三 (Three of Pentacles)" }, { name: "星幣四 (Four of Pentacles)" }, { name: "星幣五 (Five of Pentacles)" }, { name: "星幣六 (Six of Pentacles)" }, { name: "星幣七 (Seven of Pentacles)" }, { name: "星幣八 (Eight of Pentacles)" }, { name: "星幣九 (Nine of Pentacles)" }, { name: "星幣十 (Ten of Pentacles)" }, { name: "星幣侍者 (Page of Pentacles)" }, { name: "星幣騎士 (Knight of Pentacles)" }, { name: "星幣皇后 (Queen of Pentacles)" }, { name: "星幣國王 (King of Pentacles)" }
+        ];
+
+        let spreads = {
+            one: ["今日核心神諭指引"],
+            today: ["身體/行動能量", "心理/情緒狀態", "靈性/高我指引"],
+            three: ["過去 (背景根源)", "現在 (目前現狀)", "未來 (最終指引)"],
+            five: ["現狀 (目前處境)", "障礙 (面臨困難)", "潛意識 (內心想法)", "過去影響", "未來建議"],
+            nine: ["外在環境", "內心動機", "過去根源", "目前阻礙", "當前優勢", "短期發展", "他人看法", "自我盲點", "最終結果"]
+        };
+
+        let currentSpreadCards = []; 
+        let drawnCount = 0;
+        let totalCardsInSpread = 0;
+        let dynamicDeck = []; 
+        let positionNames = [];
+
+        function initSpread() {
+            const spreadType = document.getElementById('spreadSelect').value;
+            
+            const qBox = document.getElementById('questionBox');
+            if (spreadType === 'today') {
+                qBox.style.display = 'none';
+                document.getElementById('userQuestion').value = ''; 
+            } else {
+                qBox.style.display = 'flex';
+            }
+
+            positionNames = spreads[spreadType];
+            totalCardsInSpread = positionNames.length;
+            drawnCount = 0;
+            currentSpreadCards = new Array(totalCardsInSpread).fill(null);
+            
+            // 【未來提示】這裡已經幫你寫好了 originalIndex 索引，以後洗牌也能對準 0-77 張圖！
+            dynamicDeck = fullTarotDeck.map((card, idx) => ({...card, originalIndex: idx}));
+
+            document.getElementById('resultPanel').style.display = 'none';
+            document.getElementById('statusText').innerText = `已洗牌！請在粉紅直列牌組中，親自挑選 ${totalCardsInSpread} 張牌 ✧`;
+
+            const container = document.getElementById('cardContainer');
+            container.innerHTML = '';
+            positionNames.forEach((posName, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'card-wrapper';
+                wrapper.innerHTML = `
+                    <div class="position-label">${posName}</div>
+                    <div class="card" id="card-${index}"></div>
+                `;
+                container.appendChild(wrapper);
+            });
+
+            const tableSpread = document.getElementById('tableSpread');
+            tableSpread.innerHTML = '';
+            
+            const totalCardsInDeck = fullTarotDeck.length;
+            const tableWidth = Math.min(1000, window.innerWidth - 40);
+            const cardWidth = 50;
+            const step = (tableWidth - cardWidth) / (totalCardsInDeck - 1);
+
+            for (let i = 0; i < totalCardsInDeck; i++) {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'spread-card-back';
+                cardDiv.innerText = '🎀'; 
+                cardDiv.id = `deckCard-${i}`;
+                
+                const leftPosition = step * i;
+                cardDiv.style.left = `${leftPosition}px`;
+                
+                cardDiv.setAttribute('onclick', `pickCardFromSpread(${i})`);
+                tableSpread.appendChild(cardDiv);
+            }
+        }
+
+        function pickCardFromSpread(deckId) {
+            if (drawnCount >= totalCardsInSpread) return;
+
+            const pickedCardDom = document.getElementById(`deckCard-${deckId}`);
+            if (!pickedCardDom || pickedCardDom.style.visibility === 'hidden') return;
+
+            pickedCardDom.style.visibility = 'hidden';
+
+            const currentIndex = drawnCount;
+            const cardElement = document.getElementById('card-' + currentIndex);
+            
+            const randomIndex = Math.floor(Math.random() * dynamicDeck.length);
+            const selectedCard = dynamicDeck.splice(randomIndex, 1)[0];
+            const isReversed = Math.random() < 0.5;
+            const orientation = isReversed ? "逆位" : "正位";
+
+            cardElement.classList.add('has-card');
+            
+            // 這樣寫的話，有圖會顯示圖，沒圖則顯示「文字」，這樣你就不用全部弄完也能測試！
+            const imageUrl = `cards/${selectedCard.originalIndex}.png`;
+
+            cardElement.innerHTML = `
+            <div class="card-face card-back"></div>
+            <div class="card-face card-front ${isReversed ? 'reversed' : ''}" style="padding: 0; overflow: hidden; position: relative;">
+        <img src="${imageUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 100%; height: 100%;                         object-fit: cover; display: block;">
+        
+        <div style="display: none; position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; color: #3d1b54;            font-weight: bold;">
+            ${selectedCard.name}<br>(${orientation})
+        </div>
+
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 6px 4px; font-size: 0.72rem; font-weight: bold; text-align: center; backdrop-filter: blur(4px);">
+            ${selectedCard.name} (${orientation})
+        </div>
+    </div>
+`;
+
+            setTimeout(() => {
+                cardElement.classList.add('flipped');
+            }, 50);
+
+            currentSpreadCards[currentIndex] = {
+                position: positionNames[currentIndex],
+                cardName: selectedCard.name,
+                orientation: orientation
+            };
+
+            drawnCount++;
+
+            if (drawnCount < totalCardsInSpread) {
+                document.getElementById('statusText').innerText = `已挑選第 ${drawnCount} 張！請繼續點選下一張 🎀`;
+            } else {
+                document.getElementById('statusText').innerText = `挑選完畢！專屬提示詞已在下方星雲中亮起。`;
+                generateAiPrompt();
+            }
+        }
+
+        function generateAiPrompt() {
+            const spreadType = document.getElementById('spreadSelect').value;
+            const selectText = document.getElementById('spreadSelect').options[document.getElementById('spreadSelect').selectedIndex].text;
+            const userQuestion = document.getElementById('userQuestion').value.trim();
+            
+            let prompt = `你好，我剛剛使用線上塔羅牌進行了盲抽占卜（78張大小阿爾克那混牌）。\n\n`;
+            
+            if (spreadType !== 'today' && userQuestion !== '') {
+                prompt += `【我所詢問的問題】\n❓ "${userQuestion}"\n\n`;
+            } else if (spreadType !== 'today' && userQuestion === '') {
+                prompt += `【我所詢問的問題】\n❓ （未填寫特定問題，請進行普遍性的核心流年或事件探索）\n\n`;
+            }
+            
+            prompt += `【使用的塔羅牌陣】\n👉 ${selectText}\n\n`;
+            prompt += `【抽出的牌組詳細資訊】\n`;
+            
+            currentSpreadCards.forEach((item, idx) => {
+                prompt += `${idx + 1}. 位置意義：[${item.position}] ── 抽到：${item.cardName} (${item.orientation})\n`;
+            });
+
+            prompt += `\n請化身為兼具心理學、神祕學與人生教練背景的頂級塔羅大師。\n`;
+            
+            if (spreadType === 'today') {
+                prompt += `請針對我今天在【身體/行動】、【心理/情緒】以及【靈性/高我】三個層面的抽牌結果，繞開主觀的特定提問，直接從這三個生活維度給予我最純粹的能量洞察、溫暖提醒與具體的調整指引。期待你的深度解讀，謝謝！`;
+            } else if (spreadType === 'one') {
+                prompt += `請針對我所問的問題，結合這張【今日核心神諭指引】的正逆位與牌面象徵，給予我最直擊核心的宇宙洞察、盲點提醒與實用的生活行動建議。謝謝！`;
+            } else {
+                prompt += `請緊扣我所詢問的問題，並深刻結合各個牌陣位置的空間意義、牌面正逆位特徵，進行全面、溫暖、有條理的交叉深度解析，並提供切實的解套與行動方針。謝謝！`;
+            }
+
+            document.getElementById('aiPromptText').innerText = prompt;
+            document.getElementById('resultPanel').style.display = 'block';
+            
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function copyToClipboard() {
+            const textToCopy = document.getElementById('aiPromptText').innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('唯美粉紅版 Prompt 複製成功！快貼給 AI 解讀吧！🎀');
+            }).catch(err => {
+                alert('複製失敗，請手動複製文字。');
+            });
+        }
+
+        window.onload = initSpread;
+    </script>
+</body>
+</html>
