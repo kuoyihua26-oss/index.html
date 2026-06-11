@@ -160,7 +160,6 @@
             top: 15px;
         }
 
-        /* 滑鼠懸停時發出唯美粉紅光暈 */
         .spread-card-back:hover {
             top: -8px;
             transform: scale(1.08);
@@ -229,7 +228,7 @@
             box-sizing: border-box;
         }
 
-        /* 唯美大型展示卡背：粉紅蝴蝶結 */
+        /* 唯美大型展示卡背 */
         .card-back {
             background: linear-gradient(135deg, #ffaec9 0%, #fca1e6 50%, #9b5cb0 100%);
             color: #ffffff;
@@ -241,15 +240,26 @@
             filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
         }
 
-        /* 唯美正面圖片容器 */
+        /* 唯美正面 */
         .card-front {
             background-color: #fff5fa;
+            color: #3d1b54;
             transform: rotateY(180deg);
+            padding: 12px;
+            text-align: center;
             border: 3px double #fca1e6;
         }
 
-        /* 逆位時，整個正面（包含裡面的圖片）直接旋轉 180 度上下顛倒 */
+        /* 【未來提示】如果你之後放圖片，希望逆位時整張圖倒過來，請把底下的 .card-title 改成 .card-front 喔！ */
         .card-front.reversed { transform: rotateY(180deg) rotate(180deg); }
+        
+        .card-title { 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+            line-height: 1.5; 
+            color: #4a1a63;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.05);
+        }
 
         /* 結果區 */
         .result-panel {
@@ -282,7 +292,6 @@
             overflow-y: auto;
         }
 
-        /* 唯美芭比粉按鈕 */
         button {
             background: linear-gradient(90deg, #f783df 0%, #ffbfe9 100%);
             color: #311754;
@@ -329,7 +338,6 @@
 
     <div class="status-text" id="statusText">請直接在下方直列牌組中挑選卡片</div>
 
-    <!-- 一字直列展牌桌（蝴蝶結粉紅卡背） -->
     <div class="table-spread" id="tableSpread"></div>
 
     <div class="card-container" id="cardContainer"></div>
@@ -347,7 +355,7 @@
 
     <script>
         const fullTarotDeck = [
-            { name: "0 愚者 (The Fool)" }, { name: "I 魔術師 (The Magician)" }, { name: "II 女祭司 (The High Priestess)" },
+            { name: "0 愚者 (The Fool)" }, { name: "I 魔術師 (The Magician)" }, { name: "II 女祭司 (The High Presbyterian)" },
             { name: "III 女皇 (The Empress)" }, { name: "IV 皇帝 (The Emperor)" }, { name: "V 教皇 (The Hierophant)" },
             { name: "VI 戀人 (The Lovers)" }, { name: "VII 戰車 (The Chariot)" }, { name: "VIII 力量 (The Strength)" },
             { name: "IX 隱者 (The Hermit)" }, { name: "X 命運之輪 (Wheel of Fortune)" }, { name: "XI 正義 (Justice)" },
@@ -394,7 +402,7 @@
             drawnCount = 0;
             currentSpreadCards = new Array(totalCardsInSpread).fill(null);
             
-            // 複製牌組，並加上原始索引值以精準對應網路圖片
+            // 【未來提示】這裡已經幫你寫好了 originalIndex 索引，以後洗牌也能對準 0-77 張圖！
             dynamicDeck = fullTarotDeck.map((card, idx) => ({...card, originalIndex: idx}));
 
             document.getElementById('resultPanel').style.display = 'none';
@@ -450,23 +458,25 @@
             const isReversed = Math.random() < 0.5;
             const orientation = isReversed ? "逆位" : "正位";
 
-            // 替代方案一：直連開源免費圖庫網址
-            const cardImgUrl = `https://sacred-texts.com/tarot/pkt/img/ar${String(selectedCard.originalIndex).padStart(2, '0')}.jpg`;
-
             cardElement.classList.add('has-card');
-            cardElement.innerHTML = `
-                <div class="card-face card-back"></div>
-                <div class="card-face card-front ${isReversed ? 'reversed' : ''}" style="padding: 0; overflow: hidden; position: relative;">
-                    <!-- 載入古典圖片並套用唯美粉紫星雲濾鏡 -->
-                    <img src="${cardImgUrl}" style="width: 100%; height: 100%; object-fit: cover; display: block; filter: sepia(0.25) hue-rotate(315deg) saturate(1.35) brightness(0.95);">
-                    
-                    <!-- 底部半透明柔焦字條 -->
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 6px 4px; font-size: 0.72rem; font-weight: bold; text-align: center; backdrop-filter: blur(4px); line-height: 1.2;">
-                        ${selectedCard.name}<br>(${orientation})
-                    </div>
-                </div>
-            `;
+            
+            // 👇 這裡就是【正面牌面】的生成位置
+            const imageUrl = `cards/${selectedCard.originalIndex}.png`;
 
+            cardElement.innerHTML = `
+            <div class="card-face card-back"></div>
+            <div class="card-face card-front ${isReversed ? 'reversed' : ''}" style="padding: 0; overflow: hidden; position: relative;">
+            <img src="${imageUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+        
+            <div style="display: none; position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; color: #3d1b54; font-weight: bold;">
+            ${selectedCard.name}<br>(${orientation})
+            </div>
+
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 6px 4px; font-size: 0.72rem; font-weight: bold; text-align: center; backdrop-filter: blur(4px);">
+            ${selectedCard.name} (${orientation})
+        </div>
+             </div>
+            `;
             setTimeout(() => {
                 cardElement.classList.add('flipped');
             }, 50);
@@ -512,7 +522,7 @@
             if (spreadType === 'today') {
                 prompt += `請針對我今天在【身體/行動】、【心理/情緒】以及【靈性/高我】三個層面的抽牌結果，繞開主觀的特定提問，直接從這三個生活維度給予我最純粹的能量洞察、溫暖提醒與具體的調整指引。期待你的深度解讀，謝謝！`;
             } else if (spreadType === 'one') {
-                prompt += `請針對我所問的問題，結合這張【今日核心神諭指引】裝配的正逆位與牌面象徵，給予我最直擊核心的宇宙洞察、盲點提醒與實用的生活行動建議。謝謝！`;
+                prompt += `請針對我所問的問題，結合這張【今日核心神諭指引】的正逆位與牌面象徵，給予我最直擊核心的宇宙洞察、盲點提醒與實用的生活行動建議。謝謝！`;
             } else {
                 prompt += `請緊扣我所詢問的問題，並深刻結合各個牌陣位置的空間意義、牌面正逆位特徵，進行全面、溫暖、有條理的交叉深度解析，並提供切實的解套與行動方針。謝謝！`;
             }
