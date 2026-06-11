@@ -251,7 +251,11 @@
         }
 
         /* 【未來提示】如果你之後放圖片，希望逆位時整張圖倒過來，請把底下的 .card-title 改成 .card-front 喔！ */
-        .card-front.reversed { transform: rotateY(180deg) rotate(180deg); }
+       .card-front.reversed { 
+       transform: rotateY(180deg) rotate(180deg); 
+       backface-visibility: hidden;    /* 隱藏背面，提升渲染效能 */
+       image-rendering: -webkit-optimize-contrast; /* 強制圖片以最高對比度渲染 */
+       }
         
         .card-title { 
             font-weight: bold; 
@@ -460,23 +464,18 @@
 
             cardElement.classList.add('has-card');
             
-            // 這樣寫的話，有圖會顯示圖，沒圖則顯示「文字」，這樣你就不用全部弄完也能測試！
-const imageUrl = `cards/${selectedCard.originalIndex}.jpg`;
-
-cardElement.innerHTML = `
-    <div class="card-face card-back"></div>
-    <div class="card-face card-front ${isReversed ? 'reversed' : ''}" style="padding: 0; overflow: hidden; position: relative;">
-        <img src="${imageUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-        
-        <div style="display: none; position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; color: #3d1b54; font-weight: bold;">
-            ${selectedCard.name}<br>(${orientation})
-        </div>
-
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 6px 4px; font-size: 0.72rem; font-weight: bold; text-align: center; backdrop-filter: blur(4px);">
+            // 👇 這裡就是【正面牌面】的生成位置
+           cardElement.innerHTML = `
+           <div class="card-face card-back"></div>
+           <div class="card-face card-front ${isReversed ? 'reversed' : ''}" style="padding: 0; overflow: hidden;">
+           <!-- 讀取你上傳的 cards 資料夾裡的對應圖片 -->
+           <img src="cards/${selectedCard.originalIndex}.jpg" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+           <!-- 底部的粉紫半透明文字條 -->
+           <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 6px 4px; font-size: 0.72rem; font-weight: bold; text-align: center; backdrop-filter: blur(4px);">
             ${selectedCard.name} (${orientation})
-        </div>
-    </div>
-`;
+           </div>
+            </div>
+           `;
 
             setTimeout(() => {
                 cardElement.classList.add('flipped');
