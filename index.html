@@ -4,24 +4,18 @@
     <meta charset="UTF-8">
     <title>AI 智能塔羅・唯美粉嫩星雲占卜系統</title>
     <style>
-        body {
-            background: radial-gradient(circle at 50% 30%, #5a3082 0%, #361754 50%, #1e0a32 100%);
-            color: #fff2ff;
-            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box;
-        }
+        body { background: radial-gradient(circle at 50% 30%, #5a3082 0%, #361754 50%, #1e0a32 100%); color: #fff2ff; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
         h1 { color: #ffc4f7; text-shadow: 0 0 20px rgba(255, 196, 247, 0.8); margin-bottom: 20px; }
         .setup-panel { background: rgba(65, 30, 96, 0.55); backdrop-filter: blur(12px); padding: 20px; border-radius: 24px; margin-bottom: 25px; border: 1px solid rgba(255, 196, 247, 0.35); width: 100%; max-width: 600px; }
         .card-container { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
         .card-wrapper { width: 135px; height: 245px; }
-        .card { width: 100%; height: 205px; position: relative; transform-style: preserve-3d; transition: transform 0.7s; border-radius: 14px; }
+        .card { width: 100%; height: 205px; position: relative; transform-style: preserve-3d; transition: transform 0.7s; border-radius: 14px; cursor: pointer; }
         .card.flipped { transform: rotateY(180deg); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .card-back { background: linear-gradient(135deg, #ffaec9, #9b5cb0); border: 2.5px solid #fff; }
+        .card-back { background: linear-gradient(135deg, #ffaec9, #9b5cb0); border: 2.5px solid #fff; font-size: 2rem; }
         .card-front { background: #fff5fa; color: #3d1b54; transform: rotateY(180deg); padding: 0; overflow: hidden; position: relative; }
-        .result-panel { display: none; background: rgba(65,30,96,0.8); padding: 20px; border-radius: 18px; border: 1px solid rgba(255,196,247,0.5); max-width: 650px; }
-        .ai-prompt-box { background: #1a082b; color: #ffe6fb; padding: 15px; border-radius: 10px; font-family: monospace; white-space: pre-wrap; margin: 15px 0; }
+        .result-panel { display: none; background: rgba(65,30,96,0.8); padding: 20px; border-radius: 18px; border: 1px solid rgba(255,196,247,0.5); max-width: 650px; text-align: center; }
+        .ai-prompt-box { background: #1a082b; color: #ffe6fb; padding: 15px; border-radius: 10px; font-family: monospace; white-space: pre-wrap; margin: 15px 0; text-align: left; }
         button { background: linear-gradient(90deg, #f783df, #ffbfe9); color: #311754; border: none; padding: 10px 24px; border-radius: 22px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -29,7 +23,6 @@
     <h1>✦ 唯美星空神諭塔羅 ✦</h1>
     <div class="setup-panel">
         <select id="spreadSelect" onchange="initSpread()">
-            <option value="one">單張神諭指引</option>
             <option value="today" selected>今日綜合運勢</option>
         </select>
         <button onclick="initSpread()">重新洗牌</button>
@@ -43,11 +36,9 @@
     <script>
         const fullDeck = Array.from({length: 78}, (_, i) => ({ originalIndex: i, name: "塔羅牌" + i }));
         let dynamicDeck = [];
-        let drawnCount = 0;
 
         function initSpread() {
             dynamicDeck = [...fullDeck];
-            drawnCount = 0;
             document.getElementById('cardContainer').innerHTML = '<div class="card-wrapper"><div class="card" id="card-0" onclick="draw()">點我翻牌</div></div>';
             document.getElementById('resultPanel').style.display = 'none';
         }
@@ -58,21 +49,15 @@
             const card = dynamicDeck.splice(rand, 1)[0];
             const isReversed = Math.random() < 0.5;
             
-            // 關鍵：將旋轉寫在內部容器，不影響文字區域
-            const rotation = isReversed ? "rotate(180deg)" : "rotate(0deg)";
-            
-                cardElement.innerHTML = `
+            cardElement.innerHTML = `
                 <div class="card-face card-back">🎀</div>
-                <div class="card-face card-front" style="position: relative; overflow: hidden; background-color: #fff5fa;">
-                    
-                    <div style="width: 100%; height: 100%; transform: ${rotation}; transition: transform 0.5s;">
+                <div class="card-face card-front" style="position: relative; overflow: hidden;">
+                    <div style="width: 100%; height: 100%; transform: ${isReversed ? 'rotate(180deg)' : 'rotate(0deg)'}; transition: transform 0.5s;">
                         <img src="cards/${card.originalIndex}.png" onerror="this.style.display='none'" style="width:100%; height:100%; object-fit:cover; display:block;">
                     </div>
-                    
                     <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(74, 26, 99, 0.88); color: #fff2ff; padding: 8px 4px; font-size: 0.75rem; font-weight: bold; text-align: center; z-index: 10;">
                         ${card.name} ${isReversed ? '(逆位)' : '(正位)'}
                     </div>
-                    
                 </div>
             `;
             cardElement.classList.add('flipped');
@@ -80,6 +65,7 @@
             document.getElementById('aiPromptText').innerText = "這張牌是：" + card.name + (isReversed ? " 逆位" : " 正位");
         }
         window.onload = initSpread;
+        function copyToClipboard() { navigator.clipboard.writeText(document.getElementById('aiPromptText').innerText); alert('已複製！'); }
     </script>
 </body>
 </html>
